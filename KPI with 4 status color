@@ -1,7 +1,7 @@
 {
   "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
   "width": 300,
-  "height":200,
+  "height": 200,
   "padding": 0,
   "data": {
     "name": "dataset"
@@ -44,7 +44,6 @@
     {
       "mark": {
         "type": "area",
-        "line": {"color": "green"},
         "color": "lightgrey",
         "opacity": 0.5,
         "interpolate": "monotone"
@@ -67,6 +66,36 @@
     },
     {
       "mark": {
+        "type": "line",
+        "interpolate": "monotone"
+      },
+      "encoding": {
+        "x": {
+          "field": "Month",
+          "type": "ordinal",
+          "scale": {"domainMin": 4},
+          "sort": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+          "axis": {"labels": false, "ticks": false, "domain": false, "title": null}
+        },
+        "y": {
+          "field": "Digital CPM",
+          "type": "quantitative",
+          "scale": {"domain": [2, 6], "domainMin": -2},
+          "axis": {"grid": false, "labels": false, "ticks": false, "domain": false, "title": null}
+        },
+        "color": {
+          "condition": [
+            {"test": "datum.percentage_difference < -10", "value": "green"},
+            {"test": "datum.percentage_difference >= -10 && datum.percentage_difference <= 5", "value": "blue"},
+            {"test": "datum.percentage_difference > 5 && datum.percentage_difference <= 10", "value": "yellow"},
+            {"test": "datum.percentage_difference > 10", "value": "red"}
+          ],
+          "value": "black"
+        }
+      }
+    },
+    {
+      "mark": {
         "type": "text",
         "align": "center",
         "baseline": "middle",
@@ -79,10 +108,11 @@
         "color": {
           "condition": [
             {"test": "datum.percentage_difference < -10", "value": "green"},
-            {"test": "datum.percentage_difference < 5", "value": "yellow"},
-            {"test": "datum.percentage_difference < 10", "value": "blue"}
+            {"test": "datum.percentage_difference >= -10 && datum.percentage_difference <= 5", "value": "blue"},
+            {"test": "datum.percentage_difference > 5 && datum.percentage_difference <= 10", "value": "yellow"},
+            {"test": "datum.percentage_difference > 10", "value": "red"}
           ],
-          "value": "red"
+          "value": "black"
         },
         "x": {"value": 200},
         "y": {"value": 130}
