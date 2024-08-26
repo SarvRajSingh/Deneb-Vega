@@ -1,0 +1,109 @@
+{
+  "$schema": "https://vega.github.io/schema/vega-lite/v5.json",
+  "width": 300,
+  "height":200,
+  "padding": 0,
+  "data": {
+    "name": "dataset"
+  },
+  "transform": [
+    {
+      "calculate": "datum['Digital Spend'] / datum['Digital Impressions'] * 1000",
+      "as": "Digital CPM"
+    },
+    {
+      "window": [
+        {"op": "sum", "field": "Digital Spend", "as": "total_cost"},
+        {"op": "sum", "field": "Digital Impressions", "as": "total_impressions"},
+        {"op": "mean", "field": "Dollar Value", "as": "goal_value"}
+      ],
+      "frame": [null, null]
+    },
+    {
+      "calculate": "(datum.total_cost / datum.total_impressions) * 1000",
+      "as": "digital_cpm"
+    },
+    {
+      "calculate": "datum.digital_cpm - datum.goal_value",
+      "as": "diff"
+    },
+    {
+      "calculate": "(datum.diff / datum.goal_value) * 100",
+      "as": "percentage_difference"
+    },
+    {
+      "calculate": "'$ ' + format(datum.digital_cpm, '.2f')",
+      "as": "main_value_text"
+    },
+    {
+      "calculate": "'Goal: ' + format(datum.goal_value, '.2f') + ' (' + format(datum.percentage_difference, '.2f') + '%)'",
+      "as": "goal_text"
+    }
+  ],
+  "layer": [
+    {
+      "mark": {
+        "type": "area",
+        "line": {"color": "green"},
+        "color": "lightgrey",
+        "opacity": 0.5,
+        "interpolate": "monotone"
+      },
+      "encoding": {
+        "x": {
+          "field": "Month",
+          "type": "ordinal",
+          "scale": {"domainMin": 4},
+          "sort": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+          "axis": {"labels": false, "ticks": false, "domain": false, "title": null}
+        },
+        "y": {
+          "field": "Digital CPM",
+          "type": "quantitative",
+          "scale": {"domain": [2, 6], "domainMin": -2},
+          "axis": {"grid": false, "labels": false, "ticks": false, "domain": false, "title": null}
+        }
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "align": "center",
+        "baseline": "middle",
+        "dx": 0,
+        "dy": -10,
+        "fontSize": 60
+      },
+      "encoding": {
+        "text": {"field": "main_value_text"},
+        "color": {
+          "condition": [
+            {"test": "datum.percentage_difference < -10", "value": "green"},
+            {"test": "datum.percentage_difference < 5", "value": "yellow"},
+            {"test": "datum.percentage_difference < 10", "value": "blue"}
+          ],
+          "value": "red"
+        },
+        "x": {"value": 200},
+        "y": {"value": 130}
+      }
+    },
+    {
+      "mark": {
+        "type": "text",
+        "align": "center",
+        "baseline": "middle",
+        "dx": 10,
+        "dy": 10,
+        "fontSize": 25
+      },
+      "encoding": {
+        "text": {"field": "goal_text"},
+        "color": {"value": "black"},
+        "x": {"value": 200},
+        "y": {"value": 160}
+      }
+    }
+  ],
+  "view": {"stroke": "transparent"}
+}
